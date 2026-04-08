@@ -1,97 +1,69 @@
-import React, { useState } from "react";
-import { Amplify, Auth } from "aws-amplify";
-
-Amplify.configure({
-  Auth: {
-    region: "us-east-2",
-    userPoolId: "us-east-2_wTBNsYmzT",
-    userPoolWebClientId: "1mnti1d8qj2abt7cm4pluc4o7f",
-  },
-});
-
-export default function App() {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [code, setCode] = useState("");
-
-  const register = async () => {
-    try {
-      await Auth.signUp({
-        username: email,
-        password,
-        attributes: {
-          email,
-        },
-      });
-      alert("Usuario registrado. Revisa tu correo");
-    } catch (err) {
-      console.error(err);
-    }
-  };
-
-  const confirm = async () => {
-    try {
-      await Auth.confirmSignUp(email, code);
-      alert("Cuenta confirmada");
-    } catch (err) {
-      console.error(err);
-    }
-  };
-
-  const login = async () => {
-    try {
-      const user = await Auth.signIn(email, password);
-      console.log(user);
-      alert("Login exitoso");
-    } catch (err) {
-      console.error(err);
-    }
-  };
-
-  const forgot = async () => {
-    try {
-      await Auth.forgotPassword(email);
-      alert("Código enviado");
-    } catch (err) {
-      console.error(err);
-    }
-  };
-
-  const reset = async () => {
-    try {
-      await Auth.forgotPasswordSubmit(email, code, password);
-      alert("Contraseña actualizada");
-    } catch (err) {
-      console.error(err);
-    }
-  };
-
-  const getSession = async () => {
-    const session = await Auth.currentSession();
-    console.log("ID Token:", session.getIdToken().getJwtToken());
-    console.log("Access Token:", session.getAccessToken().getJwtToken());
-  };
-
+function App() {
   return (
-    <div style={{ padding: 20 }}>
-      <h2>Auth Cognito</h2>
+    <div style={{
+      background: "linear-gradient(135deg, #1f2937, #111827)",
+      height: "100vh",
+      display: "flex",
+      justifyContent: "center",
+      alignItems: "center",
+      fontFamily: "Arial"
+    }}>
+      <div style={{
+        backgroundColor: "#1f2937",
+        padding: "30px",
+        borderRadius: "12px",
+        width: "300px",
+        boxShadow: "0 10px 25px rgba(0,0,0,0.5)"
+      }}>
+        <h2 style={{
+          color: "white",
+          textAlign: "center",
+          marginBottom: "20px"
+        }}>
+          Login Cognito 🔐
+        </h2>
 
-      <input placeholder="Email" onChange={(e) => setEmail(e.target.value)} />
-      <input
-        placeholder="Password"
-        type="password"
-        onChange={(e) => setPassword(e.target.value)}
-      />
-      <input placeholder="Code" onChange={(e) => setCode(e.target.value)} />
+        <input
+          type="text"
+          placeholder="Usuario"
+          style={{
+            width: "100%",
+            padding: "10px",
+            marginBottom: "10px",
+            borderRadius: "8px",
+            border: "none",
+            outline: "none"
+          }}
+        />
 
-      <div style={{ marginTop: 10 }}>
-        <button onClick={register}>Registro</button>
-        <button onClick={confirm}>Confirmar</button>
-        <button onClick={login}>Login</button>
-        <button onClick={forgot}>Olvidé contraseña</button>
-        <button onClick={reset}>Reset contraseña</button>
-        <button onClick={getSession}>Ver Tokens</button>
+        <input
+          type="password"
+          placeholder="Contraseña"
+          style={{
+            width: "100%",
+            padding: "10px",
+            marginBottom: "15px",
+            borderRadius: "8px",
+            border: "none",
+            outline: "none"
+          }}
+        />
+
+        <button style={{
+          width: "100%",
+          padding: "10px",
+          backgroundColor: "#3b82f6",
+          color: "white",
+          border: "none",
+          borderRadius: "8px",
+          cursor: "pointer",
+          fontWeight: "bold"
+        }}>
+          Iniciar sesión
+        </button>
       </div>
     </div>
   );
 }
+
+export default App;
