@@ -1,0 +1,101 @@
+import React, { useState } from "react";
+import { Amplify, Auth } from "aws-amplify";
+
+Amplify.configure({
+  Auth: {
+    region: "us-east-2",
+    userPoolId: "us-east-2_wTBNsYmzT",
+    userPoolWebClientId: "3gsdff3e7cb757cvhgsqmsf6bh",
+  },
+});
+
+export default function App() {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [code, setCode] = useState("");
+
+  const register = async () => {
+    try {
+      await Auth.signUp({
+        username: email,
+        password,
+        attributes: {
+          email,
+          name: "Neftali",
+          "custom:cedula": "123456",
+          "custom:numero": "3000000000",
+          "custom:direccion": "Bogota",
+        },
+      });
+      alert("Usuario registrado. Revisa tu correo");
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  const confirm = async () => {
+    try {
+      await Auth.confirmSignUp(email, code);
+      alert("Cuenta confirmada");
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  const login = async () => {
+    try {
+      const user = await Auth.signIn(email, password);
+      console.log(user);
+      alert("Login exitoso");
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  const forgot = async () => {
+    try {
+      await Auth.forgotPassword(email);
+      alert("Código enviado");
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  const reset = async () => {
+    try {
+      await Auth.forgotPasswordSubmit(email, code, password);
+      alert("Contraseña actualizada");
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  const getSession = async () => {
+    const session = await Auth.currentSession();
+    console.log("ID Token:", session.getIdToken().getJwtToken());
+    console.log("Access Token:", session.getAccessToken().getJwtToken());
+  };
+
+  return (
+    <div style={{ padding: 20 }}>
+      <h2>Auth Cognito</h2>
+
+      <input placeholder="Email" onChange={(e) => setEmail(e.target.value)} />
+      <input
+        placeholder="Password"
+        type="password"
+        onChange={(e) => setPassword(e.target.value)}
+      />
+      <input placeholder="Code" onChange={(e) => setCode(e.target.value)} />
+
+      <div style={{ marginTop: 10 }}>
+        <button onClick={register}>Registro</button>
+        <button onClick={confirm}>Confirmar</button>
+        <button onClick={login}>Login</button>
+        <button onClick={forgot}>Olvidé contraseña</button>
+        <button onClick={reset}>Reset contraseña</button>
+        <button onClick={getSession}>Ver Tokens</button>
+      </div>
+    </div>
+  );
+}
